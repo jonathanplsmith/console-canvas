@@ -1,9 +1,12 @@
 CC=gcc
 
-all: main
+all: main library
 
-main: main.c consoleCanvas.h
-	$(CC) -o demo main.c
+main: main.c library
+	$(CC) -o demo.out main.c consoleCanvas.o
+
+library: consoleCanvas.c consoleCanvas.h
+	$(CC) -c consoleCanvas.c -o consoleCanvas.o
 
 clean:
-	rm demo
+	rm demo consoleCanvas.o
