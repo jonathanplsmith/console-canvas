@@ -9,4 +9,4 @@ library: consoleCanvas.c consoleCanvas.h
 	$(CC) -c consoleCanvas.c -o consoleCanvas.o
 
 clean:
-	rm demo consoleCanvas.o
+	rm demo.out consoleCanvas.o

@@ -4,17 +4,17 @@
 #include <stdbool.h>
 #include <string.h>
 
-canvas newCanvas(int height, int width) {
+canvas newCanvas(int maxX, int maxY) {
     canvas curr;
-    curr.height = height;
-    curr.width = width;
-    curr.vals = (char**) malloc(sizeof(char*) * height);
+    curr.maxX = maxX;
+    curr.maxY = maxY;
+    curr.vals = (char**) malloc(sizeof(char*) * maxX);
 
-    for (int i=0; i<height; i++) {
-        curr.vals[i] = (char*) malloc(sizeof(char) * 2 * width);
+    for (int i=0; i<maxX; i++) {
+        curr.vals[i] = (char*) malloc(sizeof(char) * 2 * maxY);
     }
-    for (int i=0; i < height; i++) {
-        for (int j=0; j < 2 * width; j++) {
+    for (int i=0; i < maxX; i++) {
+        for (int j=0; j < 2 * maxY; j++) {
             curr.vals[i][j] = ' ';
         }
     }
@@ -22,7 +22,7 @@ canvas newCanvas(int height, int width) {
 }
 
 void deleteCanvas(canvas* curr) {
-    for (int i=0; i<curr->height; i++) {
+    for (int i=0; i<curr->maxX; i++) {
         free(curr->vals[i]);
     }
     free(curr->vals);
@@ -38,8 +38,8 @@ void refreshConsole(canvas* curr) {
         system("cls");
     #endif
 
-    for (int i=0; i < curr->height; i++) {
-        for (int j=0; j < 2 * curr->width; j++) {
+    for (int i=0; i < curr->maxX; i++) {
+        for (int j=0; j < 2 * curr->maxY; j++) {
             printf("%c", curr->vals[i][j]);
         }
         printf("\n");
@@ -47,8 +47,8 @@ void refreshConsole(canvas* curr) {
 }
 
 void clearCanvas(canvas* curr) {
-    for (int i=0; i < curr->height; i++) {
-        for (int j=0; j < 2 * curr->width; j++) {
+    for (int i=0; i < curr->maxX; i++) {
+        for (int j=0; j < 2 * curr->maxY; j++) {
             curr->vals[i][j] = ' ';
         }
     }
@@ -56,9 +56,10 @@ void clearCanvas(canvas* curr) {
 }
 
 bool outOfBounds(canvas* curr, int x, int y) {
-    return y < 0 || x < 0 || x >= curr->height || y >= curr->width;
+    return y < 0 || x < 0 || x >= curr->maxX || y >= curr->maxY;
 }
 
+//may write to out of bounds locations!
 static inline void inputCharUnsafe(canvas* curr, char input, int x, int y) {
     curr->vals[x][2 * y] = input;
 }
@@ -99,7 +100,7 @@ bool placeTextVert(canvas* curr, char text[], int startX, int startY) {
     int len = strlen(text);
 
     for (int i=0; i<len; i++) {
-        if (startX + i >= 2*curr->height-1)
+        if (outOfBounds(curr, startX+i, startY))
             return false;
         curr->vals[startX+i][startY] = text[i];
     }
@@ -108,10 +109,13 @@ bool placeTextVert(canvas* curr, char text[], int startX, int startY) {
 }
 
 bool placeTextHor(canvas* curr, char text[], int startX, int startY) {
+    if (outOfBounds(curr, startX, startY))
+        return false;
+    
     int len = strlen(text);
 
     for (int i=0; i<len; i++) {
-        if (startY + i >= 2*curr->width-1)
+        if (startY + i >= 2*curr->maxY-1)
             return false;
         curr->vals[startX][startY+i] = text[i];
     }
@@ -126,4 +130,5 @@ bool drawSprite(canvas* curr, char **sprite, int rows, int cols, int startX, int
             succ = succ && inputChar(curr, sprite[i][j], startX + i, startY + j);
         }
     }
+    return succ;
 } 

@@ -20,22 +20,22 @@ int main(int argc, char* args[]) {
     placeTextHor(&cons, "You can draw characters to the console", 2, 5);
     refreshConsole(&cons);
     sleep(1);
-    for (int i=0; i<cons.height; i++) {
+    for (int i=0; i<cons.maxX; i++) {
         inputChar(&cons, '*', i, 0);
         refreshConsole(&cons);
         usleep(DELAY);
     }
-    for (int i=0; i<cons.width; i++) {
-        inputChar(&cons, '*', cons.height-1, i);
+    for (int i=0; i<cons.maxY; i++) {
+        inputChar(&cons, '*', cons.maxX-1, i);
         refreshConsole(&cons);
         usleep(DELAY); 
     }
-    for (int i=cons.height-1; i>=0; i--) {
-        inputChar(&cons, '*', i, cons.width-1);
+    for (int i=cons.maxX-1; i>=0; i--) {
+        inputChar(&cons, '*', i, cons.maxY-1);
         refreshConsole(&cons);
         usleep(DELAY);
     }
-    for (int i=cons.width-1; i>=0; i--) {
+    for (int i=cons.maxY-1; i>=0; i--) {
         inputChar(&cons, '*', 0, i);
         refreshConsole(&cons);
         usleep(DELAY);
