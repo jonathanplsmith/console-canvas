@@ -9,5 +9,7 @@ The library gives you a simple grid-based canvas, on which you can:
 - Draw individual characters to the console
 - Draw pretty lines
 - Paste sprites
+- Do all of the above in colours of your choosing
 
-A short demo program `demo.out` is provided after executing the makefile. I might add some more features (like colour) whenever I feel like it.
+I might add some more features whenever I feel like it.
+A short demo program `demo.out` is provided after executing the makefile. Documentation for the individual functions is provided in `consoleCanvas.h`. 
