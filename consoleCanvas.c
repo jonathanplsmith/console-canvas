@@ -5,6 +5,11 @@
 #include <string.h>
 
 canvas_t *newCanvas(int maxX, int maxY) {
+    #if !(defined(__linux__) || defined(__unix__) || defined(__APPLE__))
+        printf("Your OS is currently not supported :(\n");
+        exit(1);
+    #endif
+
     canvas_t *curr = malloc(sizeof(canvas_t));
     if (!curr) return NULL;
 
@@ -35,9 +40,9 @@ static inline void printCharRaw(canvas_t *curr, int x, int yR) {
     printf("%c", curr->vals[yR * curr->maxX + x].val);
     printf("\033[%dm\033[%dm", RESET_COLOUR, RESET_COLOUR + BG_OFFSET);
 }
-static inline void printChar(canvas_t *curr, int x, int y) {
-    printCharRaw(curr, x, 2 * y);
-}
+// static inline void printChar(canvas_t *curr, int x, int y) {
+//     printCharRaw(curr, x, 2 * y);
+// }
 static inline void setCharRaw(canvas_t *curr, int x, int yR, char val) {
     curr->vals[yR * curr->maxX + x].val = val;
     curr->vals[yR * curr->maxX + x].fg = curr->currFg;
@@ -57,15 +62,9 @@ void deleteCanvas(canvas_t *curr) {
 }
 
 void refreshConsole(canvas_t *curr) {
-    //OS specific clear console
-    #if defined(__linux__) || defined(__unix__) || defined(__APPLE__)
-        system("clear");
-    #endif
-
-    #if defined(__WIN32__)
-        system("cls");
-    #endif
-
+    //assumes the OS is supported, which is checked in newCanvas
+    system("clear");
+    
     int maxX = curr->maxX;
     int maxY = curr->maxY;
 

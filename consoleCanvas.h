@@ -44,8 +44,18 @@ typedef struct {
 /* Returns a new canvas of size maxX * maxY. The horizontal direction in the console is the 
     positive y-axis; the vertical direction is the positive x-axis, st. the origin is in the
     top left corner of the console.
-    Note that for every y-axis pixel two locations are actually allocated, so that
-    the canvas_t appears square. */
+    Note that for every y-axis position two characters are actually allocated, so that
+    the canvas appears square. Example for (x, y):
+    (0, 0) ---------------------> (0, maxY)
+    |
+    |
+    |
+    |
+    |
+    V
+    (maxX, 0)
+    
+*/
 canvas_t *newCanvas(int maxX, int maxY);
 
 /* Frees the memory associated with the passed canvas_t. */
@@ -54,7 +64,7 @@ void deleteCanvas(canvas_t *curr);
 /* Draws the passed canvas_t to the console. */
 void refreshConsole(canvas_t *curr);
 
-/* Clears the passed canvas_t by replacing all chars with ' '. */
+/* Clears the passed canvas_t (returns it to default state). */
 void clearCanvas(canvas_t *curr);
 
 /* Checks if the passed coordinates are out of bounds of the passed canvas_t. */
@@ -78,8 +88,8 @@ bool placeTextVert(canvas_t *curr, char text[], int startX, int startY);
     Returns true if no character is out of bounds, else returns false. */
 bool placeTextHor(canvas_t *curr, char text[], int startX, int startY);
 
-/* Draws the given 2d-char array onto the passed canvas_t , where sprite[0][0] will be drawn onto
-    canvas_t[startX][startY].
+/* Draws the given sprite onto the passed canvas_t, where sprite[0] will be drawn onto
+    canvas[startX][startY]. Assumes that sprite is saved in row-major order!
     Returns true if no character is out of bounds, else returns false. */
 bool drawSprite(canvas_t *curr, char *sprite, int rows, int cols, int startX, int startY);
 
