@@ -45,7 +45,7 @@ typedef struct {
     positive y-axis; the vertical direction is the positive x-axis, st. the origin is in the
     top left corner of the console.
     Note that for every y-axis position two characters are actually allocated, so that
-    the canvas appears square. Example for (x, y):
+    the spacing appears square. Example for (x, y):
     (0, 0) ---------------------> (0, maxY)
     |
     |

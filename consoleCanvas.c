@@ -34,19 +34,19 @@ canvas_t *newCanvas(int maxX, int maxY) {
 
 //assumes index locations are in range!
 static inline void printCharRaw(canvas_t *curr, int x, int yR) {
-    colour_t XYfg = curr->vals[yR * curr->maxX + x].fg;
-    colour_t XYbg = curr->vals[yR * curr->maxX + x].bg;
+    colour_t XYfg = curr->vals[x * 2 * curr->maxY + yR].fg;
+    colour_t XYbg = curr->vals[x * 2 * curr->maxY + yR].bg;
     printf("\033[%dm\033[%dm", XYfg, XYbg + BG_OFFSET);
-    printf("%c", curr->vals[yR * curr->maxX + x].val);
+    printf("%c", curr->vals[x * 2 * curr->maxY + yR].val);
     printf("\033[%dm\033[%dm", RESET_COLOUR, RESET_COLOUR + BG_OFFSET);
 }
 // static inline void printChar(canvas_t *curr, int x, int y) {
 //     printCharRaw(curr, x, 2 * y);
 // }
 static inline void setCharRaw(canvas_t *curr, int x, int yR, char val) {
-    curr->vals[yR * curr->maxX + x].val = val;
-    curr->vals[yR * curr->maxX + x].fg = curr->currFg;
-    curr->vals[yR * curr->maxX + x].bg = curr->currBg;
+    curr->vals[x * 2 * curr->maxY + yR].val = val;
+    curr->vals[x * 2 * curr->maxY + yR].fg = curr->currFg;
+    curr->vals[x * 2 * curr->maxY + yR].bg = curr->currBg;
 }
 static inline void setChar(canvas_t *curr, int x, int y, char val) {
     setCharRaw(curr, x, 2 * y, val);
