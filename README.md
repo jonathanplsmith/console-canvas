@@ -12,4 +12,4 @@ The library gives you a simple grid-based canvas, on which you can:
 - Do all of the above in colours of your choosing
 
 I might add some more features whenever I feel like it.
-A short demo program `demo.out` is provided after executing the makefile. Documentation for the individual functions is provided in `consoleCanvas.h`. 
+A short demo program `demo` is provided after executing the makefile. Documentation for the individual functions is provided in `consoleCanvas.h`. 
