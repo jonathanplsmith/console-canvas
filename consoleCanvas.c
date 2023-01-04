@@ -155,8 +155,9 @@ bool placeTextHor(canvas_t *curr, char text[], int startX, int startY) {
 bool drawSprite(canvas_t *curr, char *sprite, int rows, int cols, int startX, int startY) {
     bool succ = true;
     for (int i=0; i<rows; i++) {
+        int icols = i * cols;
         for (int j=0; j<cols; j++) {
-            succ = succ && inputChar(curr, sprite[i * cols + j], startX + i, startY + j);
+            succ = succ && inputChar(curr, sprite[icols + j], startX + i, startY + j);
         }
     }
     return succ;
