@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-canvas_t *newCanvas(int maxX, int maxY) { //done
+canvas_t *newCanvas(int maxX, int maxY) {
     #if !(defined(__linux__) || defined(__unix__) || defined(__APPLE__))
         printf("Your OS is currently not supported :(\n");
         exit(1);
@@ -16,7 +16,8 @@ canvas_t *newCanvas(int maxX, int maxY) { //done
     curr->maxX = maxX;
     curr->maxY = maxY;
     curr->currFg = RESET_COLOUR;
-    curr->currBg = RESET_COLOUR + BG_OFFSET; //bg escape chars are always offset compared to fg escape chars
+    //bg escape chars are always offset compared to fg escape chars
+    curr->currBg = RESET_COLOUR + BG_OFFSET; 
 
     const size_t elems = maxX * maxY; 
     curr->vals = (struct field_data *) malloc(sizeof(struct field_data) * elems);
@@ -34,27 +35,22 @@ canvas_t *newCanvas(int maxX, int maxY) { //done
 }
 
 //assumes index locations are in range!
-static inline void printCharRaw(canvas_t *curr, int x, int yR) { //done
+static inline void printCharRaw(canvas_t *curr, int x, int yR) {
     colour_t XYfg = curr->vals[x * curr->maxY + yR].fg;
     colour_t XYbg = curr->vals[x * curr->maxY + yR].bg;
     printf("\033[%dm\033[%dm", XYfg, XYbg + BG_OFFSET);
     printf("%c", curr->vals[x * curr->maxY + yR].val);
     printf("\033[%dm\033[%dm", RESET_COLOUR, RESET_COLOUR + BG_OFFSET);
 }
-// static inline void printChar(canvas_t *curr, int x, int y) {
-//     printCharRaw(curr, x, 2 * y);
-// }
-static inline void setCharRaw(canvas_t *curr, int x, int yR, char val) { //done
+static inline void setCharRaw(canvas_t *curr, int x, int yR, char val) {
     curr->vals[x * curr->maxY + yR].val = val;
     curr->vals[x * curr->maxY + yR].fg = curr->currFg;
     curr->vals[x * curr->maxY + yR].bg = curr->currBg;
 }
-static inline void setChar(canvas_t *curr, int x, int y, char val) { //done/should be deprecated
-    setCharRaw(curr, x, y, val);
-}
 
 
-void deleteCanvas(canvas_t *curr) { //done
+
+void deleteCanvas(canvas_t *curr) {
     //make sure subsequent text in the console isn't coloured
     printf("\033[%dm\033[%dm", RESET_COLOUR, RESET_COLOUR + BG_OFFSET);
 
@@ -62,7 +58,7 @@ void deleteCanvas(canvas_t *curr) { //done
     free(curr);
 }
 
-void refreshConsole(canvas_t *curr) { //done
+void refreshConsole(canvas_t *curr) {
     //assumes the OS is supported, which is checked in newCanvas
     system("clear");
     
@@ -77,7 +73,7 @@ void refreshConsole(canvas_t *curr) { //done
     }
 }
 
-void clearCanvas(canvas_t *curr) { //done
+void clearCanvas(canvas_t *curr) {
     int maxX = curr->maxX;
     int maxY = curr->maxY;
 
@@ -89,15 +85,15 @@ void clearCanvas(canvas_t *curr) { //done
     refreshConsole(curr);
 }
 
-bool outOfBounds(canvas_t *curr, int x, int y) { //done
+bool outOfBounds(canvas_t *curr, int x, int y) {
     return y < 0 || x < 0 || x >= curr->maxX || y >= curr->maxY;
 }
 
-bool inputChar(canvas_t *curr, char input, int x, int y) { //done
+bool inputChar(canvas_t *curr, char input, int x, int y) {
     if (outOfBounds(curr, x, y)) 
         return false;
     
-    setChar(curr, x, y, input);
+    setCharRaw(curr, x, y, input);
     return true;
 }
 
@@ -117,7 +113,7 @@ bool drawLine(canvas_t *curr, char type, int startX, int startY, int endX, int e
     int error = dx + dy;
 
     while (true) {
-        succ = succ && inputChar(curr, type, startX, 2*startY);
+        succ = succ && inputChar(curr, type, startX, 2*startY); //afformentioned bodge-solution
         refreshConsole(curr);
         if (startX == endX && startY == endY) break;
         int tmp = 2 * error;
@@ -132,19 +128,19 @@ bool drawLine(canvas_t *curr, char type, int startX, int startY, int endX, int e
     return succ;
 }
 
-bool placeTextVert(canvas_t *curr, char text[], int startX, int startY) { //done    
+bool placeTextVert(canvas_t *curr, char text[], int startX, int startY) {   
     int len = strlen(text);
 
     for (int i=0; i<len; i++) {
         if (outOfBounds(curr, startX+i, startY))
             return false;
-        setChar(curr, startX+i, startY, text[i]);
+        setCharRaw(curr, startX+i, startY, text[i]);
     }
 
     return true;
 }
 
-bool placeTextHor(canvas_t *curr, char text[], int startX, int startY) { //done
+bool placeTextHor(canvas_t *curr, char text[], int startX, int startY) {
     if (outOfBounds(curr, startX, startY))
         return false;
     

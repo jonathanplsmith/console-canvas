@@ -44,8 +44,7 @@ typedef struct {
 /* Returns a new canvas of size maxX * maxY. The horizontal direction in the console is the 
     positive y-axis; the vertical direction is the positive x-axis, st. the origin is in the
     top left corner of the console.
-    Note that for every y-axis position two characters are actually allocated, so that
-    the spacing appears square. Example for (x, y):
+    Example for (x, y):
     (0, 0) ---------------------> (0, maxY)
     |
     |
