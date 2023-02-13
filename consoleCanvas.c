@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-canvas_t *newCanvas(int maxX, int maxY) {
+canvas_t *newCanvas(unsigned int maxX, unsigned int maxY) {
     #if !(defined(__linux__) || defined(__unix__) || defined(__APPLE__))
         printf("Your OS is currently not supported :(\n");
         exit(1);
@@ -19,7 +19,7 @@ canvas_t *newCanvas(int maxX, int maxY) {
     //bg escape chars are always offset compared to fg escape chars
     curr->currBg = RESET_COLOUR + BG_OFFSET; 
 
-    const size_t elems = maxX * maxY; 
+    size_t elems = maxX * maxY; 
     curr->vals = (struct field_data *) malloc(sizeof(struct field_data) * elems);
     if (!curr->vals) {
         free(curr);
@@ -35,14 +35,14 @@ canvas_t *newCanvas(int maxX, int maxY) {
 }
 
 //assumes index locations are in range!
-static inline void printCharRaw(canvas_t *curr, int x, int yR) {
+static inline void printCharRaw(canvas_t *curr, unsigned int x, unsigned int yR) {
     colour_t XYfg = curr->vals[x * curr->maxY + yR].fg;
     colour_t XYbg = curr->vals[x * curr->maxY + yR].bg;
     printf("\033[%dm\033[%dm", XYfg, XYbg + BG_OFFSET);
     printf("%c", curr->vals[x * curr->maxY + yR].val);
     printf("\033[%dm\033[%dm", RESET_COLOUR, RESET_COLOUR + BG_OFFSET);
 }
-static inline void setCharRaw(canvas_t *curr, int x, int yR, char val) {
+static inline void setCharRaw(canvas_t *curr, unsigned int x, unsigned int yR, char val) {
     curr->vals[x * curr->maxY + yR].val = val;
     curr->vals[x * curr->maxY + yR].fg = curr->currFg;
     curr->vals[x * curr->maxY + yR].bg = curr->currBg;
@@ -62,11 +62,11 @@ void refreshConsole(canvas_t *curr) {
     //assumes the OS is supported, which is checked in newCanvas
     system("clear");
     
-    int maxX = curr->maxX;
-    int maxY = curr->maxY;
+    unsigned int maxX = curr->maxX;
+    unsigned int maxY = curr->maxY;
 
-    for (int x=0; x < maxX; x++) {
-        for (int y=0; y < maxY; y++) {
+    for (unsigned int x=0; x < maxX; x++) {
+        for (unsigned int y=0; y < maxY; y++) {
             printCharRaw(curr, x, y);
         }
         printf("\n");
@@ -74,10 +74,10 @@ void refreshConsole(canvas_t *curr) {
 }
 
 void clearCanvas(canvas_t *curr) {
-    int maxX = curr->maxX;
-    int maxY = curr->maxY;
+    unsigned int maxX = curr->maxX;
+    unsigned int maxY = curr->maxY;
 
-    for (int i=0; i < maxX * maxY; i++) {
+    for (unsigned int i=0; i < maxX * maxY; i++) {
         curr->vals[i].val = ' ';
         curr->vals[i].fg = RESET_COLOUR;
         curr->vals[i].bg = RESET_COLOUR + BG_OFFSET;
@@ -85,11 +85,11 @@ void clearCanvas(canvas_t *curr) {
     refreshConsole(curr);
 }
 
-bool outOfBounds(canvas_t *curr, int x, int y) {
-    return y < 0 || x < 0 || x >= curr->maxX || y >= curr->maxY;
+bool outOfBounds(canvas_t *curr, unsigned int x, unsigned int y) {
+    return x >= curr->maxX || y >= curr->maxY;
 }
 
-bool inputChar(canvas_t *curr, char input, int x, int y) {
+bool inputChar(canvas_t *curr, char input, unsigned int x, unsigned int y) {
     if (outOfBounds(curr, x, y)) 
         return false;
     
@@ -128,10 +128,10 @@ bool drawLine(canvas_t *curr, char type, int startX, int startY, int endX, int e
     return succ;
 }
 
-bool placeTextVert(canvas_t *curr, char text[], int startX, int startY) {   
-    int len = strlen(text);
+bool placeTextVert(canvas_t *curr, char text[], unsigned int startX, unsigned int startY) {   
+    unsigned int len = strlen(text);
 
-    for (int i=0; i<len; i++) {
+    for (unsigned int i=0; i<len; i++) {
         if (outOfBounds(curr, startX+i, startY))
             return false;
         setCharRaw(curr, startX+i, startY, text[i]);
@@ -140,13 +140,13 @@ bool placeTextVert(canvas_t *curr, char text[], int startX, int startY) {
     return true;
 }
 
-bool placeTextHor(canvas_t *curr, char text[], int startX, int startY) {
+bool placeTextHor(canvas_t *curr, char text[], unsigned int startX, unsigned int startY) {
     if (outOfBounds(curr, startX, startY))
         return false;
     
-    int len = strlen(text);
+    unsigned int len = strlen(text);
 
-    for (int i=0; i<len; i++) {
+    for (unsigned int i=0; i<len; i++) {
         if (startY + i >= curr->maxY)
             return false;
         //Because we don't want the text to have spaces in it, we access the raw array
@@ -156,11 +156,12 @@ bool placeTextHor(canvas_t *curr, char text[], int startX, int startY) {
     return true;
 }
 
-bool drawSprite(canvas_t *curr, char *sprite, int rows, int cols, int startX, int startY) {
+bool drawSprite(canvas_t *curr, char *sprite, unsigned int rows, unsigned int cols, 
+                                            unsigned int startX, unsigned int startY) {
     bool succ = true;
-    for (int i=0; i<rows; i++) {
+    for (unsigned int i=0; i<rows; i++) {
         int icols = i * cols;
-        for (int j=0; j<cols; j++) {
+        for (unsigned int j=0; j<cols; j++) {
             succ = succ && inputChar(curr, sprite[icols + j], startX + i, startY + j);
         }
     }
