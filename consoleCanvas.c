@@ -101,8 +101,14 @@ bool inputChar(canvas_t *curr, char input, int x, int y) { //done
     return true;
 }
 
+//Implementation of the Bresenham Line Algorithm courtesy of Wikipedia
 bool drawLine(canvas_t *curr, char type, int startX, int startY, int endX, int endY) {
-    //Implementation of the Bresenham Line Algorithm courtesy of Wikipedia
+    /* to account for the fact that character fields aren't sqaure, 
+        we move 2y for every x to make the line somewhat straight. 
+        This isn't a great solution so it should eventually be improved... */
+    startY /= 2;
+    endY /= 2;
+    
     bool succ = true;
     int dx =  abs(endX - startX);
     int stepX = startX < endX ? 1 : -1;
@@ -111,7 +117,8 @@ bool drawLine(canvas_t *curr, char type, int startX, int startY, int endX, int e
     int error = dx + dy;
 
     while (true) {
-        succ = succ && inputChar(curr, type, startX, startY);
+        succ = succ && inputChar(curr, type, startX, 2*startY);
+        refreshConsole(curr);
         if (startX == endX && startY == endY) break;
         int tmp = 2 * error;
         if (tmp > dy) { 
