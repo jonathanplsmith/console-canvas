@@ -35,17 +35,18 @@ canvas_t *newCanvas(unsigned int maxX, unsigned int maxY) {
 }
 
 //assumes index locations are in range!
-static inline void printCharRaw(canvas_t *curr, unsigned int x, unsigned int yR) {
-    colour_t XYfg = curr->vals[x * curr->maxY + yR].fg;
-    colour_t XYbg = curr->vals[x * curr->maxY + yR].bg;
+static inline void printCharRaw(canvas_t *curr, unsigned int x, unsigned int y) {
+    //Retrieve colours and set the terminal colours via escape chars, restore to default after
+    colour_t XYfg = curr->vals[x * curr->maxY + y].fg;
+    colour_t XYbg = curr->vals[x * curr->maxY + y].bg;
     printf("\033[%dm\033[%dm", XYfg, XYbg + BG_OFFSET);
-    printf("%c", curr->vals[x * curr->maxY + yR].val);
+    printf("%c", curr->vals[x * curr->maxY + y].val);
     printf("\033[%dm\033[%dm", RESET_COLOUR, RESET_COLOUR + BG_OFFSET);
 }
-static inline void setCharRaw(canvas_t *curr, unsigned int x, unsigned int yR, char val) {
-    curr->vals[x * curr->maxY + yR].val = val;
-    curr->vals[x * curr->maxY + yR].fg = curr->currFg;
-    curr->vals[x * curr->maxY + yR].bg = curr->currBg;
+static inline void setCharRaw(canvas_t *curr, unsigned int x, unsigned int y, char val) {
+    curr->vals[x * curr->maxY + y].val = val;
+    curr->vals[x * curr->maxY + y].fg = curr->currFg;
+    curr->vals[x * curr->maxY + y].bg = curr->currBg;
 }
 
 
@@ -149,22 +150,27 @@ bool placeTextHor(canvas_t *curr, char text[], unsigned int startX, unsigned int
     for (unsigned int i=0; i<len; i++) {
         if (startY + i >= curr->maxY)
             return false;
-        //Because we don't want the text to have spaces in it, we access the raw array
         setCharRaw(curr, startX, startY+i, text[i]);
     }
 
     return true;
 }
 
-bool drawSprite(canvas_t *curr, char *sprite, unsigned int rows, unsigned int cols, 
-                                            unsigned int startX, unsigned int startY) {
+bool drawSprite(canvas_t *curr, char *sprite, colour_t *colour,
+                unsigned int rows, unsigned int cols, unsigned int startX, unsigned int startY) {
     bool succ = true;
+    colour_t prev_fg = curr->currFg; //restore active colour after call
+    bool multicolour = colour != NULL; //if colour == NULL, use active colour
+
     for (unsigned int i=0; i<rows; i++) {
-        int icols = i * cols;
+        unsigned int icols = i * cols;
         for (unsigned int j=0; j<cols; j++) {
+            curr->currFg = multicolour ? colour[icols + j] : prev_fg;
             succ = succ && inputChar(curr, sprite[icols + j], startX + i, startY + j);
         }
     }
+    curr->currFg = prev_fg;
+
     return succ;
 } 
 

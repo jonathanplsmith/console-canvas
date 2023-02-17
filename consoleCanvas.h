@@ -88,19 +88,21 @@ bool placeTextVert(canvas_t *curr, char text[], unsigned int startX, unsigned in
 bool placeTextHor(canvas_t *curr, char text[], unsigned int startX, unsigned int startY);
 
 /* Draws the given sprite onto the passed canvas_t, where sprite[0] will be drawn onto
-    canvas[startX][startY]. Assumes that sprite is saved in row-major order!
+    canvas[startX][startY] with fg colour colour[0]. 
+    Assumes that sprite/colour is saved in row-major order!
+    If colour is NULL, then the currently active foreground colour will be used.
     Returns true if no character is out of bounds, else returns false. */
-bool drawSprite(canvas_t *curr, char *sprite, unsigned int rows, unsigned int cols, 
-                                            unsigned int startX, unsigned int startY);
+bool drawSprite(canvas_t *curr, char *sprite, colour_t *colour, 
+                unsigned int rows, unsigned int cols, unsigned int startX, unsigned int startY);
 
 /* Sets the active foreground colour to that specified in fg. All subsequent new elements added to
-    the canvas will have the active foreground colour. RESET_COLOUR returns to the default system 
-    foreground colour. */
+    the canvas with the exception of sprites will have the active foreground colour. 
+    RESET_COLOUR returns to the default system foreground colour. */
 void setFg(canvas_t *curr, colour_t fg);
 
 /* Sets the active background colour to that specified in bg. All subsequent new elements added to
-    the canvas will have the active background colour. RESET_COLOUR returns to the default system 
-    background colour. */
+    the canvas with the exception of sprites will have the active background colour. 
+    RESET_COLOUR returns to the default system background colour. */
 void setBg(canvas_t *curr, colour_t bg);
 
 #endif

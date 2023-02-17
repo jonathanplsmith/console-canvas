@@ -27,12 +27,12 @@ int main(void) {
     refreshConsole(cons);
     setFg(cons, BYELLOW);
     sleep(1);
-    for (int i=0; i<cons->maxX; i++) {
+    for (int i=0; i<(int)cons->maxX; i++) {
         inputChar(cons, '*', i, 0);
         refreshConsole(cons);
         usleep(DELAY);
     }
-    for (int i=0; i<cons->maxY; i+=2) {
+    for (int i=0; i<(int)cons->maxY; i+=2) {
         inputChar(cons, '*', cons->maxX-1, i);
         refreshConsole(cons);
         usleep(DELAY); 
@@ -94,17 +94,29 @@ int main(void) {
         ' ', ' ', '\\', ' ', ' ',
         '\\', '_', '_', '_', '/'
     };
-
+    colour_t cols_a [ROW * COL] = {
+        BLUE, BLUE,  WHITE, BLUE,  WHITE,
+        BLUE,  BLUE,  BLUE,  BLUE,  BLUE,
+        WHITE, WHITE, BLUE,  WHITE, WHITE,
+        BLUE,  BLUE,  BLUE,  BLUE,  BLUE
+    };
+    colour_t cols_b [ROW * COL] = {
+        WHITE, CYAN, WHITE, CYAN, WHITE,
+        RED,   RED,   RED,   RED,   RED,
+        WHITE, WHITE, BYELLOW, WHITE, WHITE,
+        BGREEN,  BGREEN,  BGREEN,  BGREEN,  BGREEN
+    };
+    
     clearCanvas(cons);
-    drawSprite(cons, smiley, ROW, COL, 10, 20);
+    drawSprite(cons, smiley, NULL, ROW, COL, 10, 20);
     refreshConsole(cons);
     usleep(25 * DELAY);
     clearCanvas(cons);
-    drawSprite(cons, smiley, ROW, COL, 2, 8);
+    drawSprite(cons, smiley, cols_a, ROW, COL, 2, 8);
     refreshConsole(cons);
     usleep(25 * DELAY);
     clearCanvas(cons);
-    drawSprite(cons, smiley, ROW, COL, 15, 18);
+    drawSprite(cons, smiley, cols_b, ROW, COL, 15, 18);
     refreshConsole(cons);
 
     deleteCanvas(cons);
