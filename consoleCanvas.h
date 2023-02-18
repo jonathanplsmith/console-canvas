@@ -45,14 +45,14 @@ typedef struct {
     positive y-axis; the vertical direction is the positive x-axis, st. the origin is in the
     top left corner of the console.
     Example for (x, y):
-    (0, 0) ---------------------> (0, maxY)
+    (0, 0) ---------------------> (0, maxY-1)
     |
     |
     |
     |
     |
     V
-    (maxX, 0)
+    (maxX-1, 0)
     
 */
 canvas_t *newCanvas(unsigned int maxX, unsigned int maxY);
