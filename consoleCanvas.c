@@ -75,10 +75,9 @@ void refreshConsole(canvas_t *curr) {
 }
 
 void clearCanvas(canvas_t *curr) {
-    unsigned int maxX = curr->maxX;
-    unsigned int maxY = curr->maxY;
+    size_t elems = curr->maxX * curr->maxY;
 
-    for (unsigned int i=0; i < maxX * maxY; i++) {
+    for (unsigned int i=0; i < elems; i++) {
         curr->vals[i].val = ' ';
         curr->vals[i].fg = RESET_COLOUR;
         curr->vals[i].bg = RESET_COLOUR + BG_OFFSET;
@@ -180,4 +179,20 @@ void setFg(canvas_t *curr, colour_t fg) {
 
 void setBg(canvas_t *curr, colour_t bg) {
     curr->currBg = bg;
+}
+
+void paintBg(canvas_t *curr, colour_t bg) {
+    size_t elems = curr->maxX * curr->maxY;
+
+    for (unsigned int i=0; i<elems; i++) {
+        curr->vals[i].bg = bg;
+    }
+}
+
+void paintFg(canvas_t *curr, colour_t fg) {
+    size_t elems = curr->maxX * curr->maxY;
+
+    for (unsigned int i=0; i<elems; i++) {
+        curr->vals[i].fg = fg;
+    }
 }

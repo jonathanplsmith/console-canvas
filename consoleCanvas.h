@@ -105,4 +105,12 @@ void setFg(canvas_t *curr, colour_t fg);
     RESET_COLOUR returns to the default system background colour. */
 void setBg(canvas_t *curr, colour_t bg);
 
+/* Sets the background colour of all tiles to bg. 
+    The currently active background colour will NOT be changed. */
+void paintBg(canvas_t *curr, colour_t bg);
+
+/* Sets the foreground colour of all tiles to fg. 
+    The currently active foreground colour will NOT be changed. */
+void paintFg(canvas_t *curr, colour_t fg);
+
 #endif
