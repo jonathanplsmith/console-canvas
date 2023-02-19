@@ -81,18 +81,18 @@ bool drawLine(canvas_t *curr, char type, int startX, int startY, int endX, int e
     Uniquely, a new character is drawn onto every new y-Axis position, not every second,
     so the text doesn't look streched out.
     Returns true if no character is out of bounds, else returns false. */
-bool placeTextVert(canvas_t *curr, char text[], unsigned int startX, unsigned int startY);
+bool placeTextVert(canvas_t *curr, const char text[], unsigned int startX, unsigned int startY);
 
 /* Writes the given text vertically starting at (startX, startY) onto the passed canvas_t.
     Returns true if no character is out of bounds, else returns false. */
-bool placeTextHor(canvas_t *curr, char text[], unsigned int startX, unsigned int startY);
+bool placeTextHor(canvas_t *curr, const char text[], unsigned int startX, unsigned int startY);
 
 /* Draws the given sprite onto the passed canvas_t, where sprite[0] will be drawn onto
-    canvas[startX][startY] with fg colour colour[0]. 
-    Assumes that sprite/colour is saved in row-major order!
-    If colour is NULL, then the currently active foreground colour will be used.
+    canvas[startX][startY] with fg colour fg[0] and bg colour bg[0]. 
+    Assumes that sprite/fg/bg is saved in row-major order!
+    If fg/bg is NULL, then the currently active colour will be used instead.
     Returns true if no character is out of bounds, else returns false. */
-bool drawSprite(canvas_t *curr, char *sprite, colour_t *colour, 
+bool drawSprite(canvas_t *curr, const char *sprite, const colour_t *fg, const colour_t *bg, 
                 unsigned int rows, unsigned int cols, unsigned int startX, unsigned int startY);
 
 /* Sets the active foreground colour to that specified in fg. All subsequent new elements added to

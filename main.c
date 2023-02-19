@@ -108,15 +108,15 @@ int main(void) {
     };
     
     clearCanvas(cons);
-    drawSprite(cons, smiley, NULL, ROW, COL, 10, 20);
+    drawSprite(cons, smiley, NULL, NULL, ROW, COL, 10, 20);
     refreshConsole(cons);
     usleep(25 * DELAY);
     clearCanvas(cons);
-    drawSprite(cons, smiley, cols_a, ROW, COL, 2, 8);
+    drawSprite(cons, smiley, cols_a, NULL, ROW, COL, 2, 8);
     refreshConsole(cons);
     usleep(25 * DELAY);
     clearCanvas(cons);
-    drawSprite(cons, smiley, cols_b, ROW, COL, 15, 18);
+    drawSprite(cons, smiley, cols_b, NULL, ROW, COL, 15, 18);
     refreshConsole(cons);
 
     deleteCanvas(cons);

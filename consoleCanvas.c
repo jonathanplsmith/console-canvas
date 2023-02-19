@@ -113,7 +113,7 @@ bool drawLine(canvas_t *curr, char type, int startX, int startY, int endX, int e
     int error = dx + dy;
 
     while (true) {
-        succ = succ && inputChar(curr, type, startX, 2*startY); //afformentioned bodge-solution
+        succ = succ & inputChar(curr, type, startX, 2*startY); //afformentioned bodge-solution
         refreshConsole(curr);
         if (startX == endX && startY == endY) break;
         int tmp = 2 * error;
@@ -128,7 +128,7 @@ bool drawLine(canvas_t *curr, char type, int startX, int startY, int endX, int e
     return succ;
 }
 
-bool placeTextVert(canvas_t *curr, char text[], unsigned int startX, unsigned int startY) {   
+bool placeTextVert(canvas_t *curr, const char text[], unsigned int startX, unsigned int startY) {   
     unsigned int len = strlen(text);
 
     for (unsigned int i=0; i<len; i++) {
@@ -140,7 +140,7 @@ bool placeTextVert(canvas_t *curr, char text[], unsigned int startX, unsigned in
     return true;
 }
 
-bool placeTextHor(canvas_t *curr, char text[], unsigned int startX, unsigned int startY) {
+bool placeTextHor(canvas_t *curr, const char text[], unsigned int startX, unsigned int startY) {
     if (outOfBounds(curr, startX, startY))
         return false;
     
@@ -155,20 +155,24 @@ bool placeTextHor(canvas_t *curr, char text[], unsigned int startX, unsigned int
     return true;
 }
 
-bool drawSprite(canvas_t *curr, char *sprite, colour_t *colour,
+bool drawSprite(canvas_t *curr, const char *sprite, const colour_t *fg, const colour_t *bg,
                 unsigned int rows, unsigned int cols, unsigned int startX, unsigned int startY) {
     bool succ = true;
     colour_t prev_fg = curr->currFg; //restore active colour after call
-    bool multicolour = colour != NULL; //if colour == NULL, use active colour
+    colour_t prev_bg = curr->currBg;
+    bool custom_fg = fg != NULL; //if colour == NULL, use active colour
+    bool custom_bg = bg != NULL;
 
     for (unsigned int i=0; i<rows; i++) {
         unsigned int icols = i * cols;
         for (unsigned int j=0; j<cols; j++) {
-            curr->currFg = multicolour ? colour[icols + j] : prev_fg;
-            succ = succ && inputChar(curr, sprite[icols + j], startX + i, startY + j);
+            curr->currFg = custom_fg ? fg[icols + j] : prev_fg;
+            curr->currBg = custom_bg ? bg[icols + j] : prev_bg;
+            succ = succ & inputChar(curr, sprite[icols + j], startX + i, startY + j);
         }
     }
     curr->currFg = prev_fg;
+    curr->currBg = prev_bg;
 
     return succ;
 } 
