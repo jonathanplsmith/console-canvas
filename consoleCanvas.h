@@ -34,8 +34,8 @@ struct field_data {
 };
 
 typedef struct {
-    unsigned int maxX;
-    unsigned int maxY;
+    int maxX;
+    int maxY;
     colour_t currFg;
     colour_t currBg;
     struct field_data *vals;
@@ -55,7 +55,7 @@ typedef struct {
     (maxX-1, 0)
     
 */
-canvas_t *newCanvas(unsigned int maxX, unsigned int maxY);
+canvas_t *newCanvas(int maxX, int maxY);
 
 /* Frees the memory associated with the passed canvas_t. */
 void deleteCanvas(canvas_t *curr);
@@ -67,11 +67,11 @@ void refreshConsole(canvas_t *curr);
 void clearCanvas(canvas_t *curr);
 
 /* Checks if the passed coordinates are out of bounds of the passed canvas_t. */
-bool outOfBounds(canvas_t *curr, unsigned int x, unsigned int y);
+bool outOfBounds(canvas_t *curr, int x, int y);
 
 /* Places char input at the passed coordinates on the passed canvas_t.
     Returns true on success and false on out-of-bounds. */
-bool inputChar(canvas_t *curr, char input, unsigned int x, unsigned int y);
+bool inputChar(canvas_t *curr, char input, int x, int y);
 
 /* Draws a line of char type between (startX, startY) and (endX, endY) on the passed canvas_t.
     Returns true if no point of the line was out of bounds, else returns false. */
@@ -81,11 +81,11 @@ bool drawLine(canvas_t *curr, char type, int startX, int startY, int endX, int e
     Uniquely, a new character is drawn onto every new y-Axis position, not every second,
     so the text doesn't look streched out.
     Returns true if no character is out of bounds, else returns false. */
-bool placeTextVert(canvas_t *curr, const char text[], unsigned int startX, unsigned int startY);
+bool placeTextVert(canvas_t *curr, const char text[], int startX, int startY);
 
 /* Writes the given text vertically starting at (startX, startY) onto the passed canvas_t.
     Returns true if no character is out of bounds, else returns false. */
-bool placeTextHor(canvas_t *curr, const char text[], unsigned int startX, unsigned int startY);
+bool placeTextHor(canvas_t *curr, const char text[], int startX, int startY);
 
 /* Draws the given sprite onto the passed canvas_t, where sprite[0] will be drawn onto
     canvas[startX][startY] with fg colour fg[0] and bg colour bg[0]. 
@@ -93,7 +93,7 @@ bool placeTextHor(canvas_t *curr, const char text[], unsigned int startX, unsign
     If fg/bg is NULL, then the currently active colour will be used instead.
     Returns true if no character is out of bounds, else returns false. */
 bool drawSprite(canvas_t *curr, const char *sprite, const colour_t *fg, const colour_t *bg, 
-                unsigned int rows, unsigned int cols, unsigned int startX, unsigned int startY);
+             int rows, int cols, int startX, int startY);
 
 /* Sets the active foreground colour to that specified in fg. All subsequent new elements added to
     the canvas with the exception of sprites will have the active foreground colour. 

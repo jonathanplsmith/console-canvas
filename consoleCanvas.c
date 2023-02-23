@@ -4,11 +4,13 @@
 #include <stdbool.h>
 #include <string.h>
 
-canvas_t *newCanvas(unsigned int maxX, unsigned int maxY) {
+canvas_t *newCanvas(int maxX, int maxY) {
     #if !(defined(__linux__) || defined(__unix__) || defined(__APPLE__))
         printf("Your OS is currently not supported :(\n");
         exit(1);
     #endif
+
+    if (maxX <= 0 || maxY <= 0) return NULL;
 
     canvas_t *curr = malloc(sizeof(canvas_t));
     if (!curr) return NULL;
@@ -35,7 +37,7 @@ canvas_t *newCanvas(unsigned int maxX, unsigned int maxY) {
 }
 
 //assumes index locations are in range!
-static inline void printCharRaw(canvas_t *curr, unsigned int x, unsigned int y) {
+static inline void printCharRaw(canvas_t *curr, int x, int y) {
     //Retrieve colours and set the terminal colours via escape chars, restore to default after
     colour_t XYfg = curr->vals[x * curr->maxY + y].fg;
     colour_t XYbg = curr->vals[x * curr->maxY + y].bg;
@@ -43,7 +45,7 @@ static inline void printCharRaw(canvas_t *curr, unsigned int x, unsigned int y) 
     printf("%c", curr->vals[x * curr->maxY + y].val);
     printf("\033[%dm\033[%dm", RESET_COLOUR, RESET_COLOUR + BG_OFFSET);
 }
-static inline void setCharRaw(canvas_t *curr, unsigned int x, unsigned int y, char val) {
+static inline void setCharRaw(canvas_t *curr, int x, int y, char val) {
     curr->vals[x * curr->maxY + y].val = val;
     curr->vals[x * curr->maxY + y].fg = curr->currFg;
     curr->vals[x * curr->maxY + y].bg = curr->currBg;
@@ -63,11 +65,11 @@ void refreshConsole(canvas_t *curr) {
     //assumes the OS is supported, which is checked in newCanvas
     system("clear");
     
-    unsigned int maxX = curr->maxX;
-    unsigned int maxY = curr->maxY;
+    int maxX = curr->maxX;
+    int maxY = curr->maxY;
 
-    for (unsigned int x=0; x < maxX; x++) {
-        for (unsigned int y=0; y < maxY; y++) {
+    for (int x=0; x < maxX; x++) {
+        for (int y=0; y < maxY; y++) {
             printCharRaw(curr, x, y);
         }
         printf("\n");
@@ -85,11 +87,11 @@ void clearCanvas(canvas_t *curr) {
     refreshConsole(curr);
 }
 
-bool outOfBounds(canvas_t *curr, unsigned int x, unsigned int y) {
-    return x >= curr->maxX || y >= curr->maxY;
+bool outOfBounds(canvas_t *curr, int x, int y) {
+    return x < 0 || x >= curr->maxX || y < 0 || y >= curr->maxY;
 }
 
-bool inputChar(canvas_t *curr, char input, unsigned int x, unsigned int y) {
+bool inputChar(canvas_t *curr, char input, int x, int y) {
     if (outOfBounds(curr, x, y)) 
         return false;
     
@@ -128,10 +130,10 @@ bool drawLine(canvas_t *curr, char type, int startX, int startY, int endX, int e
     return succ;
 }
 
-bool placeTextVert(canvas_t *curr, const char text[], unsigned int startX, unsigned int startY) {   
-    unsigned int len = strlen(text);
+bool placeTextVert(canvas_t *curr, const char text[], int startX, int startY) {   
+    int len = strlen(text);
 
-    for (unsigned int i=0; i<len; i++) {
+    for (int i=0; i<len; i++) {
         if (outOfBounds(curr, startX+i, startY))
             return false;
         setCharRaw(curr, startX+i, startY, text[i]);
@@ -140,13 +142,13 @@ bool placeTextVert(canvas_t *curr, const char text[], unsigned int startX, unsig
     return true;
 }
 
-bool placeTextHor(canvas_t *curr, const char text[], unsigned int startX, unsigned int startY) {
+bool placeTextHor(canvas_t *curr, const char text[], int startX, int startY) {
     if (outOfBounds(curr, startX, startY))
         return false;
     
-    unsigned int len = strlen(text);
+    int len = strlen(text);
 
-    for (unsigned int i=0; i<len; i++) {
+    for (int i=0; i<len; i++) {
         if (startY + i >= curr->maxY)
             return false;
         setCharRaw(curr, startX, startY+i, text[i]);
@@ -156,16 +158,16 @@ bool placeTextHor(canvas_t *curr, const char text[], unsigned int startX, unsign
 }
 
 bool drawSprite(canvas_t *curr, const char *sprite, const colour_t *fg, const colour_t *bg,
-                unsigned int rows, unsigned int cols, unsigned int startX, unsigned int startY) {
+                int rows, int cols, int startX, int startY) {
     bool succ = true;
     colour_t prev_fg = curr->currFg; //restore active colour after call
     colour_t prev_bg = curr->currBg;
     bool custom_fg = fg != NULL; //if colour == NULL, use active colour
     bool custom_bg = bg != NULL;
 
-    for (unsigned int i=0; i<rows; i++) {
-        unsigned int icols = i * cols;
-        for (unsigned int j=0; j<cols; j++) {
+    for (int i=0; i<rows; i++) {
+        int icols = i * cols;
+        for (int j=0; j<cols; j++) {
             curr->currFg = custom_fg ? fg[icols + j] : prev_fg;
             curr->currBg = custom_bg ? bg[icols + j] : prev_bg;
             succ = succ & inputChar(curr, sprite[icols + j], startX + i, startY + j);
